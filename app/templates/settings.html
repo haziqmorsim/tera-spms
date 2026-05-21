@@ -1,0 +1,219 @@
+{% extends "base.html" %} {% block content %}
+
+<h3 class="mb-4">Settings</h3>
+
+<div id="settingsAlert"></div>
+
+<div class="row g-4 mb-4">
+    <div class="col-12 col-xl-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <strong>E-mail Settings</strong>
+            </div>
+            <div class="card-body">
+                <form id="smtpSettingsForm">
+                    <div class="mb-3">
+                        <label for="emailDeliveryMethod" class="form-label">Delivery Method</label>
+                        <input type="text" class="form-control" id="emailDeliveryMethod" readonly />
+                    </div>
+                    <div class="mb-3">
+                        <label for="graphTenantId" class="form-label">Microsoft Entra Tenant ID</label>
+                        <input type="text" class="form-control" id="graphTenantId" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="graphClientId" class="form-label">Application (Client) ID</label>
+                        <input type="text" class="form-control" id="graphClientId" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="graphClientSecret" class="form-label">Client Secret</label>
+                        <input type="password" class="form-control" id="graphClientSecret" placeholder="Enter new secret or keep the existing secret" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="graphSenderEmail" class="form-label">Sender E-mail</label>
+                        <input type="email" class="form-control" id="graphSenderEmail" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailTo" class="form-label">Recipient E-mail</label>
+                        <input type="text" class="form-control" id="emailTo" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary sign-button">Save E-mail Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-xl-6">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <strong>Report Settings</strong>
+            </div>
+            <div class="card-body">
+                <form id="reportSettingsForm">
+                    <div class="mb-3">
+                        <label for="lowPshPct" class="form-label">Low-PSH Underperformance Percentage (%)</label>
+                        <input type="number" step="0.1" id="lowPshPct" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="lowPshThreshold" class="form-label">Low-PSH Absolute Threshold</label>
+                        <input type="number" step="0.1" id="lowPshThreshold" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="tempThreshold" class="form-label">Temperature Threshold (°C)</label>
+                        <input type="number" step="0.1" id="tempThreshold" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="lowStringCurrentThresholdPct" class="form-label">Low String Current Threshold Percentagr (%)</label>
+                        <input type="number" step="0.1" id="lowStringCurrentThresholdPct" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="stringCurrentStartTime" class="form-label">String Current Start Time</label>
+                        <input type="time" id="stringCurrentStartTime" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="stringCurrentEndTime" class="form-label">String Current End Time</label>
+                        <input type="time" id="stringCurrentEndTime" class="form-control" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary sign-button">Save Report Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-header">
+    <strong>FusionSolar Session Status</strong>
+  </div>
+  <div class="card-body">
+    <div class="row g-3 mb-3">
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Session File</label>
+        <div id="fsSessionFile">-</div>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold">Status</label>
+        <div id="fsSessionStatus">-</div>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">Last Modified</label>
+        <div id="fsSessionModified">-</div>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold">Size</label>
+        <div id="fsSessionSize">-</div>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold">Path</label>
+        <div id="fsSessionPath" class="small text-break">-</div>
+      </div>
+    </div>
+    <div class="mb-3">
+      <div id="fsSessionMessage" class="small text-muted">-</div>
+    </div>
+    <div class="d-flex gap-2 flex-wrap justify-content-end">
+      <button type="button" class="btn btn-outline-primary" id="refreshFusionSolarSessionBtn">
+        Refresh Status
+      </button>
+      <button type="button" class="btn btn-outline-danger" id="deleteFusionSolarSessionBtn">
+        Delete Session File
+      </button>
+    </div>
+    <div class="mt-3 small text-muted">
+      If the session is missing or expired, run:
+      <code>python -m scripts.save_fusionsolar_session</code>
+    </div>
+  </div>
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header">
+        <strong>User Management</strong>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0 settings-users-table">
+                <thead>
+                    <tr>
+                        <th class="text-center">Full Name</th>
+                        <th class="text-center">Username</th>
+                        <th class="text-center">E-mail</th>
+                        <th class="text-center">Role</th>
+                        <th class="text-center">Active</th>
+                        <th class="text-center">Last Sign In</th>
+                        <th class="text-center">Created At</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="settingsUsersTable"></tbody>
+            </table>
+        </div>
+        <div class="py-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="small text-muted" id="settingsUsersResultsInfo">Showing 0-0 of 0 results</div>
+            <ul class="custom-pagination mb-0" id="settingsUsersPagination"></ul>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content" id="editUserForm">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="editUserId" />
+                <div class="mb-3">
+                    <label for="editFullName" class="form-label">Full Name</label>
+                    <input type="text" id="editFullName" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label for="editUsername" class="form-label">Username</label>
+                    <input type="text" id="editUsername" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label for="editEmail" class="form-label">E-mail</label>
+                    <input type="email" id="editEmail" class="form-control" required />
+                </div>
+                <div class="mb-3">
+                    <label for="editRole" class="form-label">Role</label>
+                    <select id="editRole" class="form-select" required>
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" id="editIsActive" class="form-check-input" />
+                    <label for="editIsActive" class="form-check-label">
+                        Active
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary sign-button">Save Changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Delete User</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal">Close</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="deleteUserId" />
+                <p class="mb-2">Are you sure you want to delete this user: <strong id="deleteUserName">This user</strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteUserBtn">Delete User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/static/js/settings.js"></script>
+{% endblock %}

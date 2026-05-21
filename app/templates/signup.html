@@ -1,0 +1,47 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+<h4 class="mb-3">Sign Up</h4>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">
+    {{ error }}
+</div>
+{% endif %}
+
+<form id="signUpForm" action="/signup" method="post">
+    <div class="mb-3">
+        <label for="full_name" class="form-label">Full Name</label>
+        <input type="text" class="form-control" id="full_name" name="full_name" required autocomplete="name" />
+    </div>
+
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" name="username" required autocomplete="username" />
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">E-mail Address</label>
+        <input type="email" class="form-control" id="email" name="email" required autocomplete="email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required autocomplete="new-password" />
+    </div>
+
+    <div class="mb-3">
+        <label for="confirm_password" class="form-label">Confirm Password</label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required autocomplete="new-password" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mb-3 sign-button">
+        Sign Up
+    </button>
+
+    <p class="text-center mb-0">
+        Already have an account? <a href="/signin">Sign In</a>
+    </p>
+</form>
+<script src="/static/js/signup.js"></script>
+{% endblock %}

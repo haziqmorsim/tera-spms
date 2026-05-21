@@ -1,0 +1,221 @@
+{% extends "base.html" %} {% block content %}
+
+<h3 class="mb-2">Logs</h3>
+
+<div class="alert alert-small mb-2" id="logsDateRange">
+  Showing logs for the latest 3 months only. Older records remain available in the database.
+</div>
+
+<div class="container-fluid">
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Job Runs</h6>
+          <h2 id="jobRunCount">-</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Email Deliveries</h6>
+          <h2 id="emailDeliveryCount">-</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">OneDrive Uploads</h6>
+          <h2 id="oneDriveUploadCount">-</h2>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-1">Activity Logs</h6>
+          <h2 id="activityLogCount">-</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <strong>Recent Job Runs</strong>
+          <div class="table-search-box">
+            <span class="search-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <input type="search" id="jobRunsSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <colgroup>
+                <col style="width: 25%;">
+                <col style="width: 10%;">
+                <col style="width: 15%;">
+                <col style="width: 15%;">
+                <col style="width: 35%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="text-center">Job Name</th>
+                  <th class="text-center">Status</th>
+                  <th class="text-center">Started At</th>
+                  <th class="text-center">Finished At</th>
+                  <th class="text-center">Details</th>
+                </tr>
+              </thead>
+              <tbody id="jobRunsTable"></tbody>
+            </table>
+          </div>
+          <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="small text-muted" id="jobRunsResultsInfo">Showing 0-0 of 0 results</div>
+            <ul class="custom-pagination mb-0" id="jobRunsPagination"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <strong>Recent Email Deliveries</strong>
+          <div class="table-search-box">
+            <span class="search-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <input type="search" id="emailDeliveriesSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <colgroup>
+                <col style="width: 20%;">
+                <col style="width: 25%;">
+                <col style="width: 40%;">
+                <col style="width: 15%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="text-center">Time</th>
+                  <th class="text-center">Recipient</th>
+                  <th class="text-center">Subject</th>
+                  <th class="text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="emailDeliveriesTable"></tbody>
+            </table>
+          </div>
+          <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="small text-muted" id="emailDeliveriesResultsInfo">Showing 0-0 of 0 results</div>
+            <ul class="custom-pagination mb-0" id="emailDeliveriesPagination"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <strong>Recent OneDrive Uploads</strong>
+          <div class="table-search-box">
+            <span class="search-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <input type="search" id="oneDriveUploadsSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <colgroup>
+                <col style="width: 20%;">
+                <col style="width: 25%;">
+                <col style="width: 40%;">
+                <col style="width: 15%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="text-center">Time</th>
+                  <th class="text-center">Category</th>
+                  <th class="text-center">File</th>
+                  <th class="text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="oneDriveUploadsTable"></tbody>
+            </table>
+          </div>
+          <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="small text-muted" id="oneDriveUploadsResultsInfo">Showing 0-0 of 0 results</div>
+            <ul class="custom-pagination mb-0" id="oneDriveUploadsPagination"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <strong>Activity Logs</strong>
+          <div class="table-search-box">
+            <span class="search-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <input type="search" id="activityLogsSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-sm mb-0">
+              <colgroup>
+                <col style="width: 15%;">
+                <col style="width: 25%;">
+                <col style="width: 15%;">
+                <col style="width: 35%;">
+                <col style="width: 10%;">
+              </colgroup>
+              <thead>
+                <tr>
+                  <th class="text-center">Time</th>
+                  <th class="text-center">User</th>
+                  <th class="text-center">Action</th>
+                  <th class="text-center">Target</th>
+                  <th class="text-center">Status</th>
+                </tr>
+              </thead>
+              <tbody id="activityLogsTable"></tbody>
+            </table>
+          </div>
+          <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <div class="small text-muted" id="activityLogsResultsInfo">Showing 0-0 of 0 results</div>
+            <ul class="custom-pagination mb-0" id="activityLogsPagination"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/static/js/logs.js"></script>
+
+{% endblock %}

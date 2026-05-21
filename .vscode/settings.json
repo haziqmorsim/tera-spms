@@ -1,0 +1,21 @@
+{
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "python-envs.defaultEnvManager": "ms-python.python:venv",
+    "python.terminal.activateEnvironment": false,
+    "terminal.integrated.profiles.windows": {
+        "PowerShell (TERA-SPMS)": {
+        "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "args": [
+            "-NoExit",
+            "-Command",
+            "Set-Location 'C:\\tera-spms'; if (-not (Test-Path '.venv\\Scripts\\Activate.ps1')) { & 'C:\\Users\\DELL\\AppData\\Local\\Programs\\Python\\Python313\\python.exe' -m venv .venv }; Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass; . .\\.venv\\Scripts\\Activate.ps1"
+        ]
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "PowerShell (TERA-SPMS)"
+}
+// Developed by:
+// Muhammad Haziq Husni bin Morsim
+// Automation Developer
+// Boilermech Sdn. Bhd.
+// haziq.husni@boilermech.com

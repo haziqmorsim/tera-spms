@@ -1,0 +1,88 @@
+{% extends "auth_base.html" %}
+
+{% block content %}
+<h4 class="mb-3">Sign In</h4>
+
+{% if error %}
+<div class="alert alert-danger" role="alert">
+    {{ error }}
+</div>
+{% endif %}
+
+{% if signup_success %}
+<div id="signupSuccessToast" class="toast toast-success" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-icon">✓</div>
+    <div class="toast-body">
+        <div class="toast-title">Success</div>
+        <div class="toast-message">Your account is created successfully.</div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const toast = document.getElementById("signupSuccessToast");
+        if (!toast) return;
+        
+        requestAnimationFrame(() => {
+            toast.classList.add("show");
+        });
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+            toast.classList.add("hide");
+        }, 3000);
+    });
+</script>
+{% endif %}
+
+{% if reset_success %}
+<div id="resetSuccessToast" class="toast toast-success" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-icon">✓</div>
+    <div class="toast-body">
+        <div class="toast-title">Success</div>
+        <div class="toast-message">Your has been reset successfully.</div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener("DOMContentLoaded", () => {
+        const toast = document.getElementById("resetSuccessToast");
+        if (!toast) return;
+
+        requestAnimationFrame(() => {
+            toast.classList.add("show");
+        });
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+            toast.classList.add("hide");
+        }, 3000);
+    });
+</script>
+{% endif %}
+
+<form id="signInForm" action="/signin" method="post">
+    <div class="mb-3">
+        <label for="email" class="form-label">E-mail Address</label>
+        <input type="email" class="form-control" id="email" name="email" required autocomplete="email" />
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password" />
+    </div>
+
+    <div class="text-end mb-3">
+        <a href="/forgot-password" class="small text-decoration-none">Forgot Password?</a>
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100 mb-3 sign-button">
+        Sign In
+    </button>
+
+    <p class="text-center mb-0">
+        Don't have an account? <a href="/signup">Sign up</a>
+    </p>
+</form>
+<script src="/static/js/signin.js"></script>
+{% endblock %}
