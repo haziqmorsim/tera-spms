@@ -14,6 +14,7 @@ from app.api.routes.alarms import router as alarms_router
 from app.api.routes.reports import router as reports_router
 from app.api.routes.logs import router as logs_router
 from app.api.routes.settings import router as settings_router
+from app.api.routes.notifications import router as notifications_router
 from app.api.routes import troubleshooting
 from app.routes.auth import router as auth_router
 
@@ -89,4 +90,5 @@ app.include_router(alarms_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
 app.include_router(logs_router, prefix="/api")
 app.include_router(settings_router, prefix="/api")
+app.include_router(notifications_router, prefix="/api")
 app.include_router(troubleshooting.router, prefix="/api")

@@ -272,16 +272,89 @@ def send_email_with_attachments(
         )
         raise
 
-def send_email_with_attachment(
+def send_email_with_attachments(
     *,
     subject: str,
     body: str,
-    attachment_path: str | Path,
+    attachment_paths: list[str | Path],
     to_email: str | None = None,
 ) -> None:
-    send_email_with_attachments(
-        subject=subject,
-        body=body,
-        attachment_paths=[attachment_path],
-        to_email=to_email,
-    )
+    delivery_method = _get_delivery_method()
+    normalized_paths = [Path(p) for p in attachment_paths]
+
+    missing = [str(p) for p in normalized_paths if not p.exists()]
+
+    if missing:
+        error = f"Attachment(s) not found: {', '.join(missing)}"
+
+        _log_email_activity(
+            action="Email sending failed",
+            status_code=404,
+            subject=subject,
+            to_email=to_email or _get_config_value("email_to", "EMAIL_TO", ""),
+            attachment_paths=[str(p) for p in normalized_paths],
+            error=error,
+            provider=delivery_method,
+        )
+
+        raise FileNotFoundError(error)
+
+    try:
+        if delivery_method == "graph":
+            _send_via_graph(
+                subject=subject,
+                body=body,
+                attachment_paths=normalized_paths,
+                to_email=to_email,
+            )
+        else:
+            raise RuntimeError(
+                f"Unsupported EMAIL_DELIVERY_METHOD: {delivery_method}. "
+                "Use EMAIL_DELIVERY_METHOD=graph"
+            )
+
+        recipient = to_email or _get_config_value("email_to", "EMAIL_TO", "")
+        attachment_path_texts = [str(p) for p in normalized_paths]
+
+        _log_email_activity(
+            action="Email sent",
+            status_code=200,
+            subject=subject,
+            to_email=recipient,
+            attachment_paths=attachment_path_texts,
+            provider=delivery_method,
+        )
+
+        try:
+            db = SessionLocal()
+
+            from app.services.notification_service import notify_email_sent
+
+            notify_email_sent(
+                db,
+                subject=subject,
+                to_email=recipient,
+                attachment_paths=attachment_path_texts,
+            )
+
+        except Exception:
+            db.rollback()
+
+        finally:
+            try:
+                db.close()
+            except Exception:
+                pass
+
+    except Exception as exc:
+        _log_email_activity(
+            action="Email sending failed",
+            status_code=500,
+            subject=subject,
+            to_email=to_email or _get_config_value("email_to", "EMAIL_TO", ""),
+            attachment_paths=[str(p) for p in normalized_paths],
+            error=str(exc),
+            provider=delivery_method,
+        )
+
+        raise

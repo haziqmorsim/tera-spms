@@ -44,6 +44,43 @@
             <span class="text-white">Welcome, <b>{{ current_user.username if current_user else "Guest" }}</b>!</span>
           </li>
 
+          {% if current_user %}
+          <li class="nav-item dropdown me-3">
+            <button class="btn btn-outline-light btn-sm notification-button" id="notificationDropdownButton" type="button" data-bs-toggle="dropdown" data-bs-autoclose="outside" aria-expanded="false" title="Notifications">
+              <span class="notification-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M15 17H9M18 10.5C18 7.18629 15.3137 4.5 12 4.5C8.68629 4.5 6 7.18629 6 10.5V13.8L4.8 16.2C4.63375 16.5325 4.87549 16.9231 5.24721 16.9231H18.7528C19.1245 16.9231 19.3663 16.5325 19.2 16.2L18 13.8V10.5Z"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <path
+                    d="M10 19.5C10.4 20.1 11.1 20.5 12 20.5C12.9 20.5 13.6 20.1 14 19.5"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+              </span>
+              <span class="notification-badge d-none" id="notificationBadge">0</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow" aria-labelledby="notificationDropdownButton">
+              <div class="notification-dropdown-header">
+                <strong>Notifications</strong>
+                <button type="button" class="btn btn-link btn-sm p-0 notification-mark-read" id="markAllNotificationsReadBtn">
+                  Mark all as read
+                </button>
+              </div>
+              <div class="notification-list" id="notificationList">
+                <div class="notification-empty">
+                  Loading notifications...
+                </div>
+              </div>
+            </div>
+          </li>
+          {% endif %}
           <li class="nav-item">
             <a class="btn btn-outline-light btn-sm" href="/signout">Sign Out</a>
           </li>
@@ -97,5 +134,8 @@
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/loading.js"></script>
+    {% if current_user %}
+    <script src="/static/js/notifications.js"></script>
+    {% endif %}
   </body>
 </html>
