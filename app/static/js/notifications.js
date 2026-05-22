@@ -8,7 +8,7 @@ function notificationEscapeHtml(value) {
         .replaceAll("<", "&lt;")
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;")
+        .replaceAll("'", "&#039;");
 }
 
 function notificationTypeIcon(type) {
@@ -38,7 +38,7 @@ function updateNotificationBadge(unreadCount) {
 
     if (count <= 0) {
         badge.classList.add("d-none");
-        badge.textContent ="0";
+        badge.textContent = "0";
         return;
     }
 
@@ -51,7 +51,9 @@ function renderNotificationList(notifications) {
 
     if (!container) return;
 
-    if (!Array.isArray(notifications) || notifications,length === 0) {
+    const safeNotifications = Array.isArray(notifications) ? notifications : [];
+
+    if (safeNotifications.length === 0) {
         container.innerHTML = `
             <div class="notification-empty">
                 No notifications.
@@ -62,26 +64,27 @@ function renderNotificationList(notifications) {
 
     container.innerHTML = "";
 
-    notifications.forEach((item) => {
+    safeNotifications.forEach((item) => {
         const isUnread = !item.is_read;
-        const itemClass = isUnread 
-            ? "notification-item notification-item-unread" 
+
+        const itemClass = isUnread
+            ? "notification-item notification-item-unread"
             : "notification-item";
 
         container.innerHTML += `
             <div class="${itemClass}">
                 <div class="notification-item-icon">
-                ${notificationEscapeHtml(notificationTypeIcon(item.notification_type))}
+                    ${notificationEscapeHtml(notificationTypeIcon(item.notification_type))}
                 </div>
 
                 <div class="notification-item-body">
-                <div class="notification-item-message">
-                    ${notificationEscapeHtml(item.message)}
-                </div>
+                    <div class="notification-item-message">
+                        ${notificationEscapeHtml(item.message)}
+                    </div>
 
-                <div class="notification-item-time">
-                    ${notificationEscapeHtml(item.time_ago || item.created_at || "")}
-                </div>
+                    <div class="notification-item-time">
+                        ${notificationEscapeHtml(item.time_ago || item.created_at || "")}
+                    </div>
                 </div>
             </div>
         `;
@@ -108,7 +111,7 @@ async function loadNotifications() {
         if (container) {
             container.innerHTML = `
                 <div class="notification-empty text-danger">
-                Failed to load notifications.
+                    Failed to load notifications.
                 </div>
             `;
         }
