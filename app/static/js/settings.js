@@ -313,10 +313,11 @@ async function loadReportSettings() {
 
         document.getElementById("lowPshPct").value = data.low_psh_underperformance_pct ?? 10;
         document.getElementById("lowPshThreshold").value = data.low_psh_threshold ?? 3;
-        document.getElementById("tempThreshold").value = data.temp_threshold_c ?? 70;        
+        document.getElementById("lowInverterCurrentThresholdPct").value = data.low_inverter_psh_threshold_pct ?? 10;       
         document.getElementById("lowStringCurrentThresholdPct").value = data.low_string_current_threshold_pct ?? 20;
         document.getElementById("stringCurrentStartTime").value = data.string_current_start_time ?? "07:30";
         document.getElementById("stringCurrentEndTime").value = data.string_current_end_time ?? "19:30";
+        document.getElementById("tempThreshold").value = data.temp_threshold_c ?? 70; 
     } catch (error) {
         console.error("Failed to load report settings:", error);
         showAlert("Failed to load report settings.", "danger");

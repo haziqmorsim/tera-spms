@@ -367,6 +367,18 @@ input:read-only {
   background-color: #1ea5ff !important;
 }
 
+.string-start-time, .string-end-time {
+  width: 40%;
+}
+
+.string-start-time {
+  margin-right: 30px;
+}
+
+.string-end-time {
+  margin-left: 30px;
+}
+
 .sign-button:hover {
   background-color: #1ea5ffb9 !important;
   border-color: #1ea5ff !important;

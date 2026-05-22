@@ -49,28 +49,34 @@
             <div class="card-body">
                 <form id="reportSettingsForm">
                     <div class="mb-3">
-                        <label for="lowPshPct" class="form-label">Low-PSH Underperformance Percentage (%)</label>
+                        <label for="lowPshPct" class="form-label">Low Plant PSH Threshold Percentage (%)</label>
                         <input type="number" step="0.1" id="lowPshPct" class="form-control" required />
                     </div>
                     <div class="mb-3">
-                        <label for="lowPshThreshold" class="form-label">Low-PSH Absolute Threshold</label>
+                        <label for="lowPshThreshold" class="form-label">Low Plant PSH Absolute Threshold</label>
                         <input type="number" step="0.1" id="lowPshThreshold" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="lowInverterCurrentThresholdPct" class="form-label">Low Inverter PSH Threshold Percentage (%)</label>
+                        <input type="number" step="0.1" id="lowInverterCurrentThresholdPct" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="lowStringCurrentThresholdPct" class="form-label">Low String Current Threshold Percentage (%)</label>
+                        <input type="number" step="0.1" id="lowStringCurrentThresholdPct" class="form-control" required />
+                    </div>
+                    <div class="d-flex">
+                        <div class="mb-3 string-start-time">
+                            <label for="stringCurrentStartTime" class="form-label">String Current Start Time</label>
+                            <input type="time" id="stringCurrentStartTime" class="form-control" required />
+                        </div>
+                        <div class="mb-3 string-end-time">
+                            <label for="stringCurrentEndTime" class="form-label">String Current End Time</label>
+                            <input type="time" id="stringCurrentEndTime" class="form-control" required />
+                        </div>
                     </div>
                     <div class="mb-3">
                         <label for="tempThreshold" class="form-label">Temperature Threshold (°C)</label>
                         <input type="number" step="0.1" id="tempThreshold" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="lowStringCurrentThresholdPct" class="form-label">Low String Current Threshold Percentagr (%)</label>
-                        <input type="number" step="0.1" id="lowStringCurrentThresholdPct" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="stringCurrentStartTime" class="form-label">String Current Start Time</label>
-                        <input type="time" id="stringCurrentStartTime" class="form-control" required />
-                    </div>
-                    <div class="mb-3">
-                        <label for="stringCurrentEndTime" class="form-label">String Current End Time</label>
-                        <input type="time" id="stringCurrentEndTime" class="form-control" required />
                     </div>
                     <button type="submit" class="btn btn-primary sign-button">Save Report Settings</button>
                 </form>
