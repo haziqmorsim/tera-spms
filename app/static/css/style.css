@@ -163,9 +163,9 @@ input:read-only {
 .notification-badge {
   position: absolute;
   top: -7px;
-  right: -7px;
-  min-width: 18px;
-  height: 18px;
+  right: -10px;
+  min-width: 20px;
+  height: 20px;
   padding: 0 5px;
   border-radius: 999px;
   background-color: #ff0000;
@@ -368,7 +368,7 @@ input:read-only {
 }
 
 .string-start-time, .string-end-time {
-  width: 40%;
+  width: 45%;
 }
 
 .string-start-time {
