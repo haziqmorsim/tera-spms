@@ -149,9 +149,21 @@ async function markAllNotificationsAsRead() {
 document.addEventListener("DOMContentLoaded", () => {
     const markReadButton = document.getElementById("markAllNotificationsReadBtn");
     const dropdownButton = document.getElementById("notificationDropdownButton");
+    const dropdownMenu = document.querySelector(".notification-dropdown");
+
+    if (dropdownMenu) {
+        dropdownMenu.addEventListener("click", (event) => {
+            event.stopPropagation();
+        });
+    }
 
     if (markReadButton) {
-        markReadButton.addEventListener("click", markAllNotificationsAsRead);
+        markReadButton.addEventListener("click", async (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            await markAllNotificationsAsRead();
+        });
     }
 
     if (dropdownButton) {

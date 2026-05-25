@@ -49,10 +49,50 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th class="text-center">Plant Name</th>
-                  <th class="text-center">Plant PSH</th>
-                  <th class="text-center">City Average PSH</th>
-                  <th class="text-center">Deviation (%)</th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="lowPerformingPlants"
+                      data-dashboard-sort-key="plant_name"
+                    >
+                      <span class="sort-label">Plant Name</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="lowPerformingPlants"
+                      data-dashboard-sort-key="psh"
+                    >
+                      <span class="sort-label">Plant PSH</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="lowPerformingPlants"
+                      data-dashboard-sort-key="city_avg_psh"
+                    >
+                      <span class="sort-label">City Average PSH</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="lowPerformingPlants"
+                      data-dashboard-sort-key="deviation_pct"
+                    >
+                      <span class="sort-label">Deviation (%)</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody id="lowPerformingPlantsTable"></tbody>
@@ -85,11 +125,61 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th class="text-center">Plant Name</th>
-                  <th class="text-center">Device Name</th>
-                  <th class="text-center">Device SN</th>
-                  <th class="text-center">Alarm Name</th>
-                  <th class="text-center">Severity</th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="activeAlarms"
+                      data-dashboard-sort-key="plant_name"
+                    >
+                      <span class="sort-label">Plant Name</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="activeAlarms"
+                      data-dashboard-sort-key="device_name"
+                    >
+                      <span class="sort-label">Device Name</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="activeAlarms"
+                      data-dashboard-sort-key="device_sn"
+                    >
+                      <span class="sort-label">Device SN</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="activeAlarms"
+                      data-dashboard-sort-key="alarm_name"
+                    >
+                      <span class="sort-label">Alarm Name</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="activeAlarms"
+                      data-dashboard-sort-key="severity"
+                    >
+                      <span class="sort-label">Severity</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody id="activeAlarmsTable"></tbody>
@@ -121,10 +211,50 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th class="text-center">Plant Name</th>
-                  <th class="text-center">Inverter Name</th>
-                  <th class="text-center">Inverter SN</th>
-                  <th class="text-center">Temp (°C)</th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="highTemperatureInverters"
+                      data-dashboard-sort-key="plant_name"
+                    >
+                      <span class="sort-label">Plant Name</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="highTemperatureInverters"
+                      data-dashboard-sort-key="device_name"
+                    >
+                      <span class="sort-label">Inverter Name</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="highTemperatureInverters"
+                      data-dashboard-sort-key="device_sn"
+                    >
+                      <span class="sort-label">Inverter SN</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
+                  <th class="text-center">
+                    <button
+                      type="button"
+                      class="dashboard-sort-header"
+                      data-dashboard-sort-table="highTemperatureInverters"
+                      data-dashboard-sort-key="internal_temperature_c"
+                    >
+                      <span class="sort-label">Temp (°C)</span>
+                      <span class="dashboard-sort-icon">⇅</span>
+                    </button>
+                  </th>
                 </tr>
               </thead>
               <tbody id="highTemperatureInvertersTable"></tbody>
