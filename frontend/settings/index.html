@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Settings | TERA SPMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/static/img/tera-icon.png" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="/static/css/loading.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background-color:#1ea5ff">
+      <a class="navbar-brand" href="/"><img src="/static/img/tera-logo.jpg" height="40" alt="TERA Logo" /></a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <span class="text-white">Welcome, <b data-current-username>User</b>!</span>
+        <button class="btn btn-outline-light btn-sm" data-signout>Sign Out</button>
+      </div>
+    </nav>
+
+    <h2 class="fw-semibold" style="color:#07223b;margin:10px 15px">
+      Service Performance Monitoring System
+    </h2>
+
+    <div class="d-flex">
+      <div class="bg-light p-3" style="width:250px;min-height:calc(100vh - 56px)">
+        <ul class="nav flex-column sidebar-nav">
+          <li><a href="/" class="nav-link sidebar-link"><span>Dashboard</span></a></li>
+          <li><a href="/reports" class="nav-link sidebar-link"><span>Reports</span></a></li>
+          <li><a href="/logs" class="nav-link sidebar-link"><span>Logs</span></a></li>
+          <li data-admin-only><a href="/settings" class="nav-link sidebar-link active"><span>Settings</span></a></li>
+        </ul>
+      </div>
+
+      <main class="p-4 w-100">
+        <h3 class="mb-4">Settings</h3>
+
+        <div id="settingsAlert"></div>
+
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="card shadow-sm">
+              <div class="card-header"><strong>E-mail Settings</strong></div>
+              <div class="card-body">
+                <form id="emailSettingsForm">
+                  <label class="form-label">Delivery Method</label>
+                  <input id="emailDeliveryMethod" class="form-control mb-3" />
+
+                  <label class="form-label">Microsoft Entra Tenant ID</label>
+                  <input id="graphTenantId" class="form-control mb-3" />
+
+                  <label class="form-label">Application Client ID</label>
+                  <input id="graphClientId" class="form-control mb-3" />
+
+                  <label class="form-label">Client Secret</label>
+                  <input id="graphClientSecret" type="password" class="form-control mb-3" />
+
+                  <label class="form-label">Sender E-mail</label>
+                  <input id="graphSenderEmail" class="form-control mb-3" />
+
+                  <label class="form-label">Recipient E-mail</label>
+                  <input id="emailTo" class="form-control mb-3" />
+
+                  <button class="btn btn-primary" type="submit">Save E-mail Settings</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="card shadow-sm">
+              <div class="card-header"><strong>Report Settings</strong></div>
+              <div class="card-body">
+                <form id="reportSettingsForm">
+                  <label class="form-label">Temperature Threshold (°C)</label>
+                  <input id="tempThreshold" class="form-control mb-3" />
+
+                  <label class="form-label">Low PSH Underperformance Percentage (%)</label>
+                  <input id="lowPshPct" class="form-control mb-3" />
+                  <input id="lowPshThreshold" type="hidden" />
+                  <input id="lowInverterCurrentThresholdPct" type="hidden" />
+
+                  <label class="form-label">Low String Current Threshold Percentage (%)</label>
+                  <input id="lowStringCurrentThresholdPct" class="form-control mb-3" />
+
+                  <label class="form-label">String Current Start Time</label>
+                  <input id="stringCurrentStartTime" type="time" class="form-control mb-3" />
+
+                  <label class="form-label">String Current End Time</label>
+                  <input id="stringCurrentEndTime" type="time" class="form-control mb-3" />
+
+                  <button class="btn btn-primary" type="submit">Save Report Settings</button>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card shadow-sm">
+              <div class="card-header"><strong>FusionSolar Session</strong></div>
+              <div class="card-body">
+                <p>Status: <span id="fsSessionStatus"></span></p>
+                <p>Path: <span id="fsSessionPath"></span></p>
+                <p>File: <span id="fsSessionFile"></span></p>
+                <p>Size: <span id="fsSessionSize"></span></p>
+                <p>Modified: <span id="fsSessionModified"></span></p>
+                <p id="fsSessionMessage" class="small text-muted"></p>
+
+                <button id="refreshFusionSolarSessionBtn" class="btn btn-primary btn-sm" type="button">
+                  Refresh Session
+                </button>
+                <button id="deleteFusionSolarSessionBtn" class="btn btn-danger btn-sm" type="button">
+                  Delete Session
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="card shadow-sm">
+              <div class="card-header"><strong>Users</strong></div>
+              <div class="card-body p-0">
+                <table class="table table-sm mb-0">
+                  <thead>
+                    <tr>
+                      <th>Full Name</th>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="settingsUsersTable"></tbody>
+                </table>
+                <div class="d-flex justify-content-end p-3">
+                  <ul id="settingsUsersPagination" class="custom-pagination mb-0"></ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="editUserModal" tabindex="-1">
+          <div class="modal-dialog">
+            <form class="modal-content" id="editUserForm">
+              <div class="modal-header">
+                <h5 class="modal-title">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input id="editUserId" type="hidden" />
+
+                <label class="form-label">Full Name</label>
+                <input id="editFullName" class="form-control mb-3" />
+
+                <label class="form-label">Username</label>
+                <input id="editUsername" class="form-control mb-3" />
+
+                <label class="form-label">Email</label>
+                <input id="editEmail" class="form-control mb-3" />
+
+                <label class="form-label">Role</label>
+                <select id="editRole" class="form-select mb-3">
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+
+                <div class="form-check">
+                  <input id="editIsActive" class="form-check-input" type="checkbox" />
+                  <label for="editIsActive" class="form-check-label">Active</label>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                <button class="btn btn-primary" type="submit">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="modal fade" id="deleteUserModal" tabindex="-1">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title">Delete User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <input id="deleteUserId" type="hidden" />
+                Delete <strong id="deleteUserName"></strong>?
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                <button id="confirmDeleteUserBtn" class="btn btn-danger" type="button">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="app-footer text-center">Copyright © 2026 | All Rights Reserved.</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/loading.js"></script>
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/frontend-auth.js"></script>
+    <script src="/static/js/settings.js"></script>
+    <script>requireAuth();</script>
+  </body>
+</html>

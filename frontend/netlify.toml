@@ -1,0 +1,23 @@
+[build]
+  publish = "."
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://YOUR-BACKEND-DOMAIN.com/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/reports"
+  to = "/reports/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/logs"
+  to = "/logs/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/settings"
+  to = "/settings/index.html"
+  status = 200

@@ -518,9 +518,9 @@ def build_troubleshooting_pdf(
             string_rows,
             [
                 usable_width * 0.24,
-                usable_width * 0.11,
+                usable_width * 0.14,
+                usable_width * 0.15,
                 usable_width * 0.17,
-                usable_width * 0.18,
                 usable_width * 0.10,
                 usable_width * 0.10,
                 usable_width * 0.10,

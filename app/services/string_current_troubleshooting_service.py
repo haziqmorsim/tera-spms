@@ -1752,7 +1752,7 @@ def detect_low_performing_strings_for_inverter(
     included_totals = {
         string_name: total_current
         for string_name, total_current in totals.items()
-        if not (Decimal("-5") <= total_current <= Decimal("1")) # excluded from calculation
+        if not (Decimal("-50") <= total_current <= Decimal("50")) # excluded from calculation
     }
 
     if len(included_totals) < 2:

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Logs | TERA SPMS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/static/img/tera-icon.png" />
+    <link rel="stylesheet" href="/static/css/style.css" />
+    <link rel="stylesheet" href="/static/css/loading.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  </head>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background-color:#1ea5ff">
+      <a class="navbar-brand" href="/"><img src="/static/img/tera-logo.jpg" height="40" alt="TERA Logo" /></a>
+      <div class="ms-auto d-flex align-items-center gap-3">
+        <span class="text-white">Welcome, <b data-current-username>User</b>!</span>
+        <button class="btn btn-outline-light btn-sm" data-signout>Sign Out</button>
+      </div>
+    </nav>
+
+    <h2 class="fw-semibold" style="color:#07223b;margin:10px 15px">
+      Service Performance Monitoring System
+    </h2>
+
+    <div class="d-flex">
+      <div class="bg-light p-3" style="width:250px;min-height:calc(100vh - 56px)">
+        <ul class="nav flex-column sidebar-nav">
+          <li><a href="/" class="nav-link sidebar-link"><span>Dashboard</span></a></li>
+          <li><a href="/reports" class="nav-link sidebar-link"><span>Reports</span></a></li>
+          <li><a href="/logs" class="nav-link sidebar-link active"><span>Logs</span></a></li>
+          <li data-admin-only><a href="/settings" class="nav-link sidebar-link"><span>Settings</span></a></li>
+        </ul>
+      </div>
+
+      <main class="p-4 w-100">
+        <h3 class="mb-4">Logs</h3>
+
+        <div class="row g-3 mb-4">
+          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">Job Runs</h6><h2 id="jobRunCount">0</h2></div></div></div>
+          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">Email Deliveries</h6><h2 id="emailDeliveryCount">0</h2></div></div></div>
+          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">OneDrive Uploads</h6><h2 id="oneDriveUploadCount">0</h2></div></div></div>
+          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">Activity Logs</h6><h2 id="activityLogCount">0</h2></div></div></div>
+        </div>
+
+        <section class="card shadow-sm mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Job Runs</strong>
+            <input id="jobRunsSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <thead><tr><th>Job Name</th><th>Status</th><th>Started At</th><th>Finished At</th><th>Details</th></tr></thead>
+              <tbody id="jobRunsTable"></tbody>
+            </table>
+            <div class="d-flex justify-content-end p-3"><ul id="jobRunsPagination" class="custom-pagination mb-0"></ul></div>
+          </div>
+        </section>
+
+        <section class="card shadow-sm mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Email Deliveries</strong>
+            <input id="emailDeliveriesSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <thead><tr><th>Time</th><th>Recipient</th><th>Subject</th><th>Status</th></tr></thead>
+              <tbody id="emailDeliveriesTable"></tbody>
+            </table>
+            <div class="d-flex justify-content-end p-3"><ul id="emailDeliveriesPagination" class="custom-pagination mb-0"></ul></div>
+          </div>
+        </section>
+
+        <section class="card shadow-sm mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>OneDrive Uploads</strong>
+            <input id="oneDriveUploadsSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <thead><tr><th>Time</th><th>Category</th><th>Target</th><th>Status</th></tr></thead>
+              <tbody id="oneDriveUploadsTable"></tbody>
+            </table>
+            <div class="d-flex justify-content-end p-3"><ul id="oneDriveUploadsPagination" class="custom-pagination mb-0"></ul></div>
+          </div>
+        </section>
+
+        <section class="card shadow-sm mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>Activity Logs</strong>
+            <input id="activityLogsSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
+          </div>
+          <div class="card-body p-0">
+            <table class="table table-sm mb-0">
+              <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Target</th><th>Status</th></tr></thead>
+              <tbody id="activityLogsTable"></tbody>
+            </table>
+            <div class="d-flex justify-content-end p-3"><ul id="activityLogsPagination" class="custom-pagination mb-0"></ul></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <footer class="app-footer text-center">Copyright © 2026 | All Rights Reserved.</footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/loading.js"></script>
+    <script src="/static/js/api-client.js"></script>
+    <script src="/static/js/frontend-auth.js"></script>
+    <script src="/static/js/logs.js"></script>
+    <script>requireAuth();</script>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+/api/*  https://YOUR-BACKEND-DOMAIN.com/api/:splat  200
+/reports  /reports/index.html  200
+/logs  /logs/index.html  200
+/settings  /settings/index.html  200
