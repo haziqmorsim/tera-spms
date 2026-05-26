@@ -19,8 +19,7 @@ CORS_ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv(
         "CORS_ALLOWED_ORIGINS",
-        "http://localhost:8888,http://localhost:5173,http://127.0.0.1:8888", 
-        "https://tera-spms.netlify.app/",
+        "http://localhost:8888,http://localhost:5173,http://127.0.0.1:8888,https://tera-spms.netlify.app/",
     ).split(",")
     if origin.strip()
 ]
