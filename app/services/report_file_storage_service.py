@@ -14,7 +14,7 @@ PDF_CONTENT_TYPE = "application/pdf"
 def _normalise_path(value: str | Path | None) -> str | None:
     if value is None:
         return None
-    
+
     return str(value).replace("\\", "/")
 
 def _guess_content_type(path: Path) -> str:
@@ -22,10 +22,10 @@ def _guess_content_type(path: Path) -> str:
 
     if suffix == ".xlsx":
         return EXCEL_CONTENT_TYPE
-    
+
     if suffix == ".pdf":
         return PDF_CONTENT_TYPE
-    
+
     guessed = mimetypes.guess_type(path.name)[0]
     return guessed or "application/octet-stream"
 
@@ -34,17 +34,19 @@ def _read_file_bytes(path: str | Path) -> bytes:
 
     if not file_path.exists() or not file_path.is_file():
         raise FileNotFoundError(f"Report file not found: {file_path}")
-    
+
     return file_path.read_bytes()
 
 def _safe_int(value: Any) -> int | None:
     try:
         if value is None:
             return None
+
         return int(value)
+
     except Exception:
         return None
-    
+
 def ensure_report_files_table(db: Session) -> None:
     db.execute(
         text(
@@ -123,14 +125,14 @@ def ensure_report_files_table(db: Session) -> None:
     )
 
 def store_report_file_in_db(
-    db: Session, 
-    *, 
-    report_type: str, 
-    report_day: date | datetime | None, 
-    file_path: str | Path, 
-    local_file_path: str | Path | None = None, 
-    onedrive_path: str | Path | None = None, 
-    onedrive_web_url: str | Path | None = None, 
+    db: Session,
+    *,
+    report_type: str,
+    report_day: date | datetime | None,
+    file_path: str | Path,
+    local_file_path: str | Path | None = None,
+    onedrive_path: str | Path | None = None,
+    onedrive_web_url: str | None = None,
 ) -> int:
     ensure_report_files_table(db)
 
@@ -185,18 +187,18 @@ def store_report_file_in_db(
                 updated_at = now()
             RETURNING id
             """
-        ), 
+        ),
         {
-            "report_type": report_type, 
-            "report_day": report_day, 
-            "file_name": source_path.name, 
-            "content_type": content_type, 
-            "file_ext": source_path.suffix.lower(), 
-            "file_size_bytes": len(file_bytes), 
-            "file_sha256": file_hash, 
-            "file_data": file_bytes, 
-            "local_file_path": _normalise_path(source_path), 
-            "onedrive_path": _normalise_path(onedrive_path), 
+            "report_type": report_type,
+            "report_day": report_day,
+            "file_name": source_path.name,
+            "content_type": content_type,
+            "file_ext": source_path.suffix.lower(),
+            "file_size_bytes": len(file_bytes),
+            "file_sha256": file_hash,
+            "file_data": file_bytes,
+            "local_file_path": _normalise_path(source_path),
+            "onedrive_path": _normalise_path(onedrive_path),
             "onedrive_web_url": onedrive_web_url,
         },
     ).scalar_one()
@@ -204,10 +206,10 @@ def store_report_file_in_db(
     return int(row_id)
 
 def update_report_file_onedrive_backup(
-    db: Session, 
-    *, 
-    report_file_id: int, 
-    onedrive_path: str | Path | None, 
+    db: Session,
+    *,
+    report_file_id: int,
+    onedrive_path: str | Path | None,
     onedrive_web_url: str | None = None,
 ) -> None:
     ensure_report_files_table(db)
@@ -222,19 +224,19 @@ def update_report_file_onedrive_backup(
                 updated_at = now()
             WHERE id = :report_file_id
             """
-        ), 
+        ),
         {
-            "report_file_id": report_file_id, 
-            "onedrive_path": _normalise_path(onedrive_path), 
+            "report_file_id": report_file_id,
+            "onedrive_path": _normalise_path(onedrive_path),
             "onedrive_web_url": onedrive_web_url,
         },
     )
 
 def update_report_file_onedrive_backup_by_local_file(
-    db: Session, 
-    *, 
-    local_file_path: str | Path, 
-    onedrive_path: str | Path | None, 
+    db: Session,
+    *,
+    local_file_path: str | Path,
+    onedrive_path: str | Path | None,
     onedrive_web_url: str | None = None,
 ) -> int | None:
     ensure_report_files_table(db)
@@ -249,10 +251,10 @@ def update_report_file_onedrive_backup_by_local_file(
                 FROM report_files
                 WHERE local_file_path = :local_file_path
                    OR replace(local_file_path, '\\', '/') = :local_file_path
-                ORDER BY updated_at DESC
+                ORDER BY updated_at DESC, created_at DESC
                 LIMIT 1
                 """
-            ), 
+            ),
             {"local_file_path": normalised_local_path},
         )
         .mappings()
@@ -261,21 +263,21 @@ def update_report_file_onedrive_backup_by_local_file(
 
     if not row:
         return None
-    
+
     report_file_id = int(row["id"])
 
     update_report_file_onedrive_backup(
-        db, 
-        report_file_id=report_file_id, 
-        onedrive_path=onedrive_path, 
+        db,
+        report_file_id=report_file_id,
+        onedrive_path=onedrive_path,
         onedrive_web_url=onedrive_web_url,
     )
 
     return report_file_id
 
 def get_report_file_for_download(
-    db: Session, 
-    *, 
+    db: Session,
+    *,
     report_file_id: int,
 ) -> dict | None:
     ensure_report_files_table(db)
@@ -296,7 +298,7 @@ def get_report_file_for_download(
                 WHERE id = :id
                 LIMIT 1
                 """
-            ), 
+            ),
             {"id": report_file_id},
         )
         .mappings()
@@ -305,13 +307,60 @@ def get_report_file_for_download(
 
     return dict(row) if row else None
 
+def fetch_report_file_items(
+    db: Session,
+    *,
+    limit: int = 200,
+) -> list[dict]:
+    ensure_report_files_table(db)
+
+    rows = (
+        db.execute(
+            text(
+                """
+                SELECT
+                    id,
+                    report_type,
+                    report_day,
+                    file_name,
+                    content_type,
+                    file_ext,
+                    file_size_bytes,
+                    local_file_path,
+                    onedrive_path,
+                    onedrive_web_url,
+                    created_at,
+                    updated_at
+                FROM report_files
+                ORDER BY report_day DESC NULLS LAST, updated_at DESC, created_at DESC
+                LIMIT :limit
+                """
+            ),
+            {"limit": limit},
+        )
+        .mappings()
+        .all()
+    )
+
+    items: list[dict] = []
+
+    for row in rows:
+        item = dict(row)
+        item["id"] = _safe_int(item.get("id"))
+        item["file_url"] = f"/api/reports/files/{item['id']}/download"
+        item["download_url"] = item["file_url"]
+        item["file_path"] = item.get("local_file_path") or item.get("onedrive_path")
+        items.append(item)
+
+    return items
+
 def find_report_file_for_day(
-    db: Session, 
-    *, 
-    report_types: list[str], 
-    report_day, 
-    file_prefix: str, 
-    file_suffix: str, 
+    db: Session,
+    *,
+    report_types: list[str],
+    report_day,
+    file_prefix: str,
+    file_suffix: str,
 ) -> dict | None:
     ensure_report_files_table(db)
 
@@ -320,7 +369,7 @@ def find_report_file_for_day(
 
     report_types_upper = [item.upper() for item in report_types]
 
-    rows = (
+    row = (
         db.execute(
             text(
                 """
@@ -343,37 +392,34 @@ def find_report_file_for_day(
                 ORDER BY updated_at DESC, created_at DESC
                 LIMIT 1
                 """
-            ), 
+            ),
             {
-                "report_types": report_types_upper, 
-                "report_day": report_day, 
+                "report_types": report_types_upper,
+                "report_day": report_day,
                 "file_pattern": f"{file_prefix}%{file_suffix}",
             },
         )
         .mappings()
-        .all()
+        .first()
     )
 
-    if not rows:
-        return None
-    
-    return dict(rows[0])
+    return dict(row) if row else None
 
 def materialise_report_file_from_db(
-    db: Session, 
-    *, 
-    report_file_id: int, 
+    db: Session,
+    *,
+    report_file_id: int,
     output_dir: str | Path | None = None,
 ) -> Path:
     row = get_report_file_for_download(db, report_file_id=report_file_id)
 
     if not row:
         raise FileNotFoundError(f"Report file not found in database: {report_file_id}")
-    
+
     if output_dir is None:
         temp_dir = Path(tempfile.mkdtemp(prefix="tera_spms_report_"))
     else:
-        temp_dir = output_dir
+        temp_dir = Path(output_dir)
 
     temp_dir.mkdir(parents=True, exist_ok=True)
 
@@ -381,57 +427,3 @@ def materialise_report_file_from_db(
     output_path.write_bytes(bytes(row["file_data"]))
 
     return output_path
-
-def fetch_report_file_items(limit: int = 200, db: Session | None = None) -> list[dict]:
-    close_db = False
-
-    if db is None:
-        from app.db.session import SessionLocal
-
-        db = SessionLocal
-        close_db = True
-
-    try:
-        ensure_report_files_table(db)
-
-        rows = (
-            db.execute(
-                text(
-                    """
-                    SELECT
-                        id,
-                        report_type,
-                        report_day,
-                        file_name,
-                        content_type,
-                        file_ext,
-                        file_size_bytes,
-                        local_file_path,
-                        onedrive_path,
-                        onedrive_web_url,
-                        created_at,
-                        updated_at
-                    FROM report_files
-                    ORDER BY updated_at DESC, created_at DESC
-                    LIMIT :limit
-                    """
-                ), 
-                {"limit": limit},
-            )
-            .mappings()
-            .all()
-        )
-
-        items: list[dict] = []
-
-        for row in rows:
-            item = dict(row)
-            item["id"] = _safe_int(item.get("id"))
-            item["file_url"] = f"/api/reports/files/{item['id']}/download"
-            item["file_path"] = item.get("local_file_path") or item.get("onedrive_path")
-
-        return items
-    
-    finally:
-        if close_db:
-            db.close()

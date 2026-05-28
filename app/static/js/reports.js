@@ -19,6 +19,10 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function asArray(value) {
+  return Array.isArray(value) ? value : [];
+}
+
 function buildSearchText(row) {
   if (row === null || row === undefined) return "";
 
@@ -33,13 +37,14 @@ function buildSearchText(row) {
 }
 
 function filterRows(rows, searchTerm) {
+  const safeRows = asArray(rows);
   const term = String(searchTerm || "").trim().toLowerCase();
 
   if (!term) {
-    return rows || [];
+    return safeRows;
   }
 
-  return (rows || []).filter((row) => buildSearchText(row).includes(term));
+  return safeRows.filter((row) => buildSearchText(row).includes(term));
 }
 
 function renderResultsInfo(containerId, totalRows, currentPage, pageSize = PAGE_SIZE) {
@@ -163,9 +168,11 @@ function renderPagination(containerId, pageInfo, onPageClick) {
 }
 
 function paginateRows(rows, currentPage) {
+  const safeRows = asArray(rows);
   const start = (currentPage - 1) * PAGE_SIZE;
   const end = start + PAGE_SIZE;
-  return rows.slice(start, end);
+
+  return safeRows.slice(start, end);
 }
 
 function renderReportRows({
@@ -182,10 +189,12 @@ function renderReportRows({
 
   if (!tbody || !pagination) return;
 
+  const safeRows = asArray(rows);
+
   tbody.innerHTML = "";
   pagination.innerHTML = "";
 
-  if (!rows || rows.length === 0) {
+  if (safeRows.length === 0) {
     tbody.innerHTML = `
       <tr>
         <td colspan="2" class="text-center text-muted py-3">
@@ -198,13 +207,13 @@ function renderReportRows({
     return;
   }
 
-  const totalPages = Math.ceil(rows.length / PAGE_SIZE);
+  const totalPages = Math.ceil(safeRows.length / PAGE_SIZE);
   const safePage = Math.min(Math.max(currentPage, 1), totalPages);
-  const pageRows = paginateRows(rows, safePage);
+  const pageRows = paginateRows(safeRows, safePage);
 
   pageRows.forEach((row) => {
     const fileName = row.file_name || "-";
-    const fileUrl = row.file_url || "";
+    const fileUrl = row.file_url || row.download_url || "";
 
     const linkHtml = fileUrl
       ? `<a href="${escapeHtml(fileUrl)}" target="_blank" class="btn btn-sm btn-outline-primary">Open</a>`
@@ -220,7 +229,7 @@ function renderReportRows({
     `;
   });
 
-  renderResultsInfo(resultsInfoId, rows.length, safePage);
+  renderResultsInfo(resultsInfoId, safeRows.length, safePage);
   renderPagination(
     paginationId,
     {
@@ -240,7 +249,7 @@ function renderTroubleshootingReports(currentPage = 1) {
     tableBodyId: "troubleshootingReportsTable",
     paginationId: "troubleshootingReportsPagination",
     resultsInfoId: "troubleshootingReportsResultsInfo",
-    emptyMessage: "No OneDrive troubleshooting reports found.",
+    emptyMessage: "No troubleshooting reports found in TigerData.",
     rerender: (page) => renderTroubleshootingReports(page),
   });
 }
@@ -254,7 +263,7 @@ function renderExcelReports(currentPage = 1) {
     tableBodyId: "csvReportsTable",
     paginationId: "csvReportsPagination",
     resultsInfoId: "csvReportsResultsInfo",
-    emptyMessage: "No OneDrive excel reports found.",
+    emptyMessage: "No Excel reports found in TigerData.",
     rerender: (page) => renderExcelReports(page),
   });
 }
@@ -268,7 +277,7 @@ function renderMonthlyReports(currentPage = 1) {
     tableBodyId: "monthlyReportsTable",
     paginationId: "monthlyReportsPagination",
     resultsInfoId: "monthlyReportsResultsInfo",
-    emptyMessage: "No OneDrive monthly reports found.",
+    emptyMessage: "No monthly reports found in TigerData.",
     rerender: (page) => renderMonthlyReports(page),
   });
 }
@@ -297,14 +306,10 @@ function updateReportsSummary(summary) {
   }
 
   if (onedriveReportsInfo) {
-    if (summary.onedrive_warning) {
-      onedriveReportsInfo.className = "alert alert-warning small mb-4";
-      onedriveReportsInfo.textContent = summary.onedrive_warning;
-    } else {
-      onedriveReportsInfo.className = "alert alert-info small mb-4";
-      onedriveReportsInfo.textContent =
-        `Displaying reports from OneDrive directory: ${summary.onedrive_report_dir || "-"}`;
-    }
+    onedriveReportsInfo.className = "alert alert-info small mb-4";
+    onedriveReportsInfo.textContent =
+      `Displaying reports from ${summary.primary_storage || "TigerData"}. ` +
+      `OneDrive remains the backup storage.`;
   }
 }
 
@@ -351,9 +356,9 @@ async function loadReports() {
 
     updateReportsSummary(data.summary || {});
 
-    troubleshootingReportsCache = data.troubleshooting_reports || [];
-    excelReportsCache = data.csv_reports || [];
-    monthlyReportsCache = data.monthly_reports || [];
+    troubleshootingReportsCache = asArray(data.troubleshooting_reports);
+    excelReportsCache = asArray(data.csv_reports);
+    monthlyReportsCache = asArray(data.monthly_reports);
 
     renderTroubleshootingReports(1);
     renderExcelReports(1);
@@ -365,7 +370,7 @@ async function loadReports() {
     if (onedriveReportsInfo) {
       onedriveReportsInfo.className = "alert alert-danger small mb-4";
       onedriveReportsInfo.textContent =
-        error.message || "Failed to load reports from OneDrive.";
+        error.message || "Failed to load reports from TigerData.";
     }
   } finally {
     if (window.hideLoading) {

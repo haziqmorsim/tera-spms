@@ -126,96 +126,6 @@ def to_onedrive_report_url(
     except Exception:
         return None
 
-def _file_item_from_onedrive(
-    file: Path,
-    *,
-    onedrive_root: Path,
-) -> dict:
-    modified_dt = datetime.fromtimestamp(file.stat().st_mtime, APP_TZ)
-
-    return {
-        "file_name": file.name,
-        "file_path": file.as_posix(),
-        "file_url": to_onedrive_report_url(file, onedrive_root=onedrive_root),
-        "onedrive_path": file.as_posix(),
-        "modified_at": format_datetime_gmt8(modified_dt),
-        "generated_at": format_datetime_gmt8(modified_dt),
-        "_modified_at_raw": modified_dt,
-    }
-
-def _scan_onedrive_report_files(db: Session) -> tuple[list[dict], list[dict], list[dict], str | None]:
-    onedrive_root = _get_onedrive_report_root(db)
-
-    if onedrive_root is None:
-        return [], [], [], "OneDrive Report Directory is not configured."
-
-    if not onedrive_root.exists() or not onedrive_root.is_dir():
-        return [], [], [], f"OneDrive Report Directory does not exist: {onedrive_root}"
-
-    monthly_reports: list[dict] = []
-    troubleshooting_reports: list[dict] = []
-    spreadsheet_reports: list[dict] = []
-
-    for file in onedrive_root.rglob("*"):
-        if not file.is_file():
-            continue
-
-        lower_name = file.name.lower()
-        suffix = file.suffix.lower()
-        parts = {part.lower() for part in file.relative_to(onedrive_root).parts}
-
-        item = _file_item_from_onedrive(file, onedrive_root=onedrive_root)
-
-        is_monthly = (
-            lower_name.startswith("monthly_report_")
-            and suffix in {".pdf", ".xlsx"}
-            and ("monthly" in parts or "monthly reports" in " ".join(parts))
-        )
-
-        is_troubleshooting = (
-            suffix == ".pdf"
-            and (
-                lower_name.startswith("troubleshooting_report_")
-                or "troubleshooting" in parts
-            )
-        )
-
-        is_alarm_excel = (
-            suffix == ".xlsx"
-            and (
-                lower_name.startswith("alarms_report_")
-                or lower_name.startswith("alarm_report_")
-                or "alarms" in parts
-            )
-        )
-
-        is_low_psh_generation_excel = (
-            suffix == ".xlsx"
-            and (
-                lower_name.startswith("low_psh_generation_report_")
-                or "overall" in parts
-            )
-        )
-
-        if is_monthly:
-            monthly_reports.append(item)
-
-        elif is_troubleshooting:
-            troubleshooting_reports.append(item)
-
-        elif is_alarm_excel or is_low_psh_generation_excel:
-            spreadsheet_reports.append(item)
-
-    monthly_reports.sort(key=lambda x: x["_modified_at_raw"], reverse=True)
-    troubleshooting_reports.sort(key=lambda x: x["_modified_at_raw"], reverse=True)
-    spreadsheet_reports.sort(key=lambda x: x["_modified_at_raw"], reverse=True)
-
-    for group in (monthly_reports, troubleshooting_reports, spreadsheet_reports):
-        for item in group:
-            item.pop("_modified_at_raw", None)
-
-    return monthly_reports, troubleshooting_reports, spreadsheet_reports, None
-
 def _format_report_day(value) -> str | None:
     if not value:
         return None
@@ -229,14 +139,19 @@ def _format_report_datetime(value) -> str | None:
     return format_datetime_gmt8(value)
 
 def _report_file_item(row: dict) -> dict:
+    file_url = row.get("file_url")
+
+    if not file_url and row.get("id"):
+        file_url = f"/api/reports/files/{row['id']}/download"
+
     return {
         "id": row.get("id"),
         "report_type": row.get("report_type"),
         "report_day": _format_report_day(row.get("report_day")),
         "file_name": row.get("file_name"),
         "file_path": row.get("file_path"),
-        "file_url": row.get("file_url"),
-        "download_url": row.get("file_url"),
+        "file_url": file_url,
+        "download_url": file_url,
         "local_file_path": row.get("local_file_path"),
         "onedrive_path": row.get("onedrive_path"),
         "onedrive_web_url": row.get("onedrive_web_url"),
@@ -255,7 +170,7 @@ def _categorise_report_files(report_files: list[dict]) -> tuple[list[dict], list
 
         report_type = str(row.get("report_type") or "").upper()
         file_name = str(row.get("file_name") or "").lower()
-        file_ext = str(row.get("file_ext") or "").lower()
+        file_ext = str(row.get("file_ext") or Path(file_name).suffix).lower()
 
         is_monthly = (
             report_type in {"MONTHLY_XLSX", "MONTHLY_PDF"}
@@ -577,16 +492,14 @@ async def generate_monthly_report_from_bill(
 
 @router.get("/overview")
 def reports_overview(
-    limit: int = Query(50, ge=1, le=200),
+    limit: int = Query(50, ge=1, le=500),
     db: Session = Depends(get_db),
 ):
-    report_files = fetch_report_file_items(limit=limit * 3, db=db)
+    report_files = fetch_report_file_items(db, limit=limit * 5)
 
     monthly_reports, troubleshooting_reports, csv_reports = _categorise_report_files(
         report_files
     )
-
-    onedrive_root = _get_onedrive_report_root(db)
 
     generated_rows = (
         db.execute(
@@ -602,7 +515,8 @@ def reports_overview(
                     gr.notes,
                     gr.generated_at,
                     rf.file_name,
-                    rf.onedrive_path
+                    rf.onedrive_path,
+                    rf.onedrive_web_url
                 FROM generated_reports gr
                 LEFT JOIN report_files rf
                     ON rf.id = gr.report_file_id
@@ -615,6 +529,8 @@ def reports_overview(
         .mappings()
         .all()
     )
+
+    onedrive_root = _get_onedrive_report_root(db)
 
     generated_reports = []
 
@@ -633,7 +549,9 @@ def reports_overview(
                 "file_path": item.get("file_path"),
                 "local_file_path": item.get("local_file_path"),
                 "onedrive_path": item.get("onedrive_path"),
-                "file_name": item.get("file_name") or Path(str(item.get("file_path") or "")).name,
+                "onedrive_web_url": item.get("onedrive_web_url"),
+                "file_name": item.get("file_name")
+                or Path(str(item.get("file_path") or "")).name,
                 "file_url": (
                     f"/api/reports/files/{report_file_id}/download"
                     if report_file_id
@@ -652,20 +570,16 @@ def reports_overview(
             }
         )
 
-    _, _, _, onedrive_warning = _scan_onedrive_report_files(db)
-
-    total_files_count = (
-        len(monthly_reports) + len(troubleshooting_reports) + len(csv_reports)
-    )
-
     summary = {
-        "generated_reports_count": total_files_count,
+        "generated_reports_count": (
+            len(monthly_reports) + len(troubleshooting_reports) + len(csv_reports)
+        ),
         "monthly_reports_count": len(monthly_reports),
         "troubleshooting_reports_count": len(troubleshooting_reports),
         "csv_reports_count": len(csv_reports),
         "logged_generated_reports_count": len(generated_reports),
         "onedrive_report_dir": str(onedrive_root) if onedrive_root else None,
-        "onedrive_warning": onedrive_warning,
+        "onedrive_warning": None,
         "primary_storage": "TigerData",
         "backup_storage": "OneDrive",
     }

@@ -43,12 +43,12 @@ def fetch_excel_reports(limit: int = 50) -> list[dict]:
                                 'ALARM_XLSX',
                                 'LOW_PSH_GENERATION_XLSX'
                             )
-                            OR replace(local_file_path, '\\', '/') ILIKE 'reports/excel/alarms/%'
-                            OR replace(local_file_path, '\\', '/') ILIKE 'reports/excel/overall/%'
-                            OR replace(onedrive_path, '\\', '/') ILIKE '%/Excel/%'
+                            OR lower(file_name) LIKE 'alarms_report_%.xlsx'
+                            OR lower(file_name) LIKE 'alarm_report_%.xlsx'
+                            OR lower(file_name) LIKE 'low_psh_generation_report_%.xlsx'
                         )
                         AND lower(file_name) LIKE '%.xlsx'
-                    ORDER BY updated_at DESC, created_at DESC
+                    ORDER BY report_day DESC NULLS LAST, updated_at DESC, created_at DESC
                     LIMIT :limit
                     """
                 ),
@@ -64,6 +64,7 @@ def fetch_excel_reports(limit: int = 50) -> list[dict]:
             item = dict(row)
             item["file_path"] = item.get("local_file_path") or item.get("onedrive_path")
             item["file_url"] = f"/api/reports/files/{item['id']}/download"
+            item["download_url"] = item["file_url"]
             reports.append(item)
 
         return reports
@@ -77,6 +78,7 @@ def _path_exists(value: str | None) -> bool:
 
     try:
         return Path(value).exists()
+
     except Exception:
         return False
 
@@ -163,4 +165,10 @@ def save_generated_report(
         db.close()
 
 def fetch_all_report_files(limit: int = 200) -> list[dict]:
-    return fetch_report_file_items(limit=limit)
+    db = SessionLocal()
+
+    try:
+        return fetch_report_file_items(db, limit=limit)
+
+    finally:
+        db.close()
