@@ -3,5 +3,6 @@ fusionsolar_state.json
 __pycache__/
 *.py[cod]
 *$py.class
-/reports/
+reports/
+# Local Netlify folder
 .netlify
