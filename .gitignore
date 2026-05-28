@@ -3,6 +3,5 @@ fusionsolar_state.json
 __pycache__/
 *.py[cod]
 *$py.class
-reports/
-# Local Netlify folder
+C:/tera-spms/reports/
 .netlify
