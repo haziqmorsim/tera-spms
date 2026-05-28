@@ -9,20 +9,50 @@
     <link rel="stylesheet" href="/static/css/loading.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   </head>
-
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background-color:#1ea5ff">
       <a class="navbar-brand" href="/"><img src="/static/img/tera-logo.jpg" height="40" alt="TERA Logo" /></a>
       <div class="ms-auto d-flex align-items-center gap-3">
         <span class="text-white">Welcome, <b data-current-username>User</b>!</span>
+        <div class="dropdown">
+          <button class="btn btn-outline-light btn-sm notification-button" id="notificationDropdownButton" type="button" data-bs-toggle="dropdown" data-bs-autoclose="outside" aria-expanded="false" title="Notifications">
+            <span class="notification-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M15 17H9M18 10.5C18 7.18629 15.3137 4.5 12 4.5C8.68629 4.5 6 7.18629 6 10.5V13.8L4.8 16.2C4.63375 16.5325 4.87549 16.9231 5.24721 16.9231H18.7528C19.1245 16.9231 19.3663 16.5325 19.2 16.2L18 13.8V10.5Z"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M10 19.5C10.4 20.1 11.1 20.5 12 20.5C12.9 20.5 13.6 20.1 14 19.5"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+            </span>
+            <span class="notification-badge d-none" id="notificationBadge">0</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow">
+            <div class="notification-dropdown-header">
+              <strong>Notifications</strong>
+              <button type="button" class="btn btn-link btn-sm p-0 notification-mark-read" id="markAllNotificationsReadBtn">
+                Mark all as read
+              </button>
+            </div>
+            <div class="notification-list" id="notificationList">
+              <div class="notification-empty">Loading notifications...</div>
+            </div>
+          </div>
+        </div>
         <button class="btn btn-outline-light btn-sm" data-signout>Sign Out</button>
       </div>
     </nav>
-
     <h2 class="fw-semibold" style="color:#07223b;margin:10px 15px">
       Service Performance Monitoring System
     </h2>
-
     <div class="d-flex">
       <div class="bg-light p-3" style="width:250px;min-height:calc(100vh - 56px)">
         <ul class="nav flex-column sidebar-nav">
@@ -32,12 +62,9 @@
           <li data-admin-only><a href="/settings" class="nav-link sidebar-link active"><span>Settings</span></a></li>
         </ul>
       </div>
-
       <main class="p-4 w-100">
         <h3 class="mb-4">Settings</h3>
-
         <div id="settingsAlert"></div>
-
         <div class="row g-4">
           <div class="col-lg-6">
             <div class="card shadow-sm">
@@ -46,28 +73,21 @@
                 <form id="emailSettingsForm">
                   <label class="form-label">Delivery Method</label>
                   <input id="emailDeliveryMethod" class="form-control mb-3" />
-
                   <label class="form-label">Microsoft Entra Tenant ID</label>
                   <input id="graphTenantId" class="form-control mb-3" />
-
                   <label class="form-label">Application Client ID</label>
                   <input id="graphClientId" class="form-control mb-3" />
-
                   <label class="form-label">Client Secret</label>
                   <input id="graphClientSecret" type="password" class="form-control mb-3" />
-
                   <label class="form-label">Sender E-mail</label>
                   <input id="graphSenderEmail" class="form-control mb-3" />
-
                   <label class="form-label">Recipient E-mail</label>
                   <input id="emailTo" class="form-control mb-3" />
-
                   <button class="btn btn-primary" type="submit">Save E-mail Settings</button>
                 </form>
               </div>
             </div>
           </div>
-
           <div class="col-lg-6">
             <div class="card shadow-sm">
               <div class="card-header"><strong>Report Settings</strong></div>
@@ -75,27 +95,21 @@
                 <form id="reportSettingsForm">
                   <label class="form-label">Temperature Threshold (°C)</label>
                   <input id="tempThreshold" class="form-control mb-3" />
-
                   <label class="form-label">Low PSH Underperformance Percentage (%)</label>
                   <input id="lowPshPct" class="form-control mb-3" />
                   <input id="lowPshThreshold" type="hidden" />
                   <input id="lowInverterCurrentThresholdPct" type="hidden" />
-
                   <label class="form-label">Low String Current Threshold Percentage (%)</label>
                   <input id="lowStringCurrentThresholdPct" class="form-control mb-3" />
-
                   <label class="form-label">String Current Start Time</label>
                   <input id="stringCurrentStartTime" type="time" class="form-control mb-3" />
-
                   <label class="form-label">String Current End Time</label>
                   <input id="stringCurrentEndTime" type="time" class="form-control mb-3" />
-
                   <button class="btn btn-primary" type="submit">Save Report Settings</button>
                 </form>
               </div>
             </div>
           </div>
-
           <div class="col-12">
             <div class="card shadow-sm">
               <div class="card-header"><strong>FusionSolar Session</strong></div>
@@ -106,7 +120,6 @@
                 <p>Size: <span id="fsSessionSize"></span></p>
                 <p>Modified: <span id="fsSessionModified"></span></p>
                 <p id="fsSessionMessage" class="small text-muted"></p>
-
                 <button id="refreshFusionSolarSessionBtn" class="btn btn-primary btn-sm" type="button">
                   Refresh Session
                 </button>
@@ -116,7 +129,6 @@
               </div>
             </div>
           </div>
-
           <div class="col-12">
             <div class="card shadow-sm">
               <div class="card-header"><strong>Users</strong></div>
@@ -141,7 +153,6 @@
             </div>
           </div>
         </div>
-
         <div class="modal fade" id="editUserModal" tabindex="-1">
           <div class="modal-dialog">
             <form class="modal-content" id="editUserForm">
@@ -151,22 +162,17 @@
               </div>
               <div class="modal-body">
                 <input id="editUserId" type="hidden" />
-
                 <label class="form-label">Full Name</label>
                 <input id="editFullName" class="form-control mb-3" />
-
                 <label class="form-label">Username</label>
                 <input id="editUsername" class="form-control mb-3" />
-
                 <label class="form-label">Email</label>
                 <input id="editEmail" class="form-control mb-3" />
-
                 <label class="form-label">Role</label>
                 <select id="editRole" class="form-select mb-3">
                   <option value="user">User</option>
                   <option value="admin">Admin</option>
                 </select>
-
                 <div class="form-check">
                   <input id="editIsActive" class="form-check-input" type="checkbox" />
                   <label for="editIsActive" class="form-check-label">Active</label>
@@ -179,7 +185,6 @@
             </form>
           </div>
         </div>
-
         <div class="modal fade" id="deleteUserModal" tabindex="-1">
           <div class="modal-dialog">
             <div class="modal-content">
@@ -200,9 +205,7 @@
         </div>
       </main>
     </div>
-
     <footer class="app-footer text-center">Copyright © 2026 | All Rights Reserved.</footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="/static/js/loading.js"></script>
     <script src="/static/js/api-client.js"></script>
