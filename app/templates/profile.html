@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Profile | TERA SPMS{% endblock %}
+
+{% block content %}
+
+<h3 class="mb-4">Profile</h3>
+
+<div id="profileAlert"></div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <strong>Edit Profile</strong>
+            </div>
+
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="mb-3">
+                        <label for="profileFullName" class="form-label">Full Name</label>
+                        <input type="text" id="profileFullName" class="form-control" required minlength="2" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="profileUsername" class="form-label">Username</label>
+                        <input type="text" id="profileUsername" class="form-control" required minlength="2" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="profileEmail" class="form-label">E-mail Address</label>
+                        <input type="email" id="profileFullName" class="form-control" required />
+                    </div>
+                    <hr class="my-4" />
+                    <h6 class="mb-3">Change Password</h6>
+                    <p class="text-muted small mb-3">
+                        Leave the password fields empty if you only want to update your information.
+                    </p>
+                    <div class="mb-3">
+                        <label for="profileCurrentPassword" class="form-label">Current Password</label>
+                        <input type="password" id="profileCurrentPassword" class="form-control" autocomplete="current-password" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="profileNewPassword" class="form-label">New Password</label>
+                        <input type="password" id="profileNewPassword" class="form-control" autocomplete="new-password" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="profileConfirmNewPassword" class="form-label">Confirm New Password</label>
+                        <input type="password" id="profileConfirmNewPassword" class="form-control" autocomplete="new-password" />
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="saveProfileBtn">
+                        Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <strong>Account Information</strong>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="tex-muted small">Role</div>
+                    <div id="profileRole">-</div>
+                </div>
+                <div class="mb-3">
+                    <div class="tex-muted small">Status</div>
+                    <div id="profileStatus">-</div>
+                </div>
+                <div class="mb-3">
+                    <div class="tex-muted small">Last Sign In</div>
+                    <div id="profileLastSignIn">-</div>
+                </div>
+                <div class="mb-3">
+                    <div class="tex-muted small">Created At</div>
+                    <div id="profileCreatedAt">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/statis/js/profile.js"></script>
+
+{% endblock %}

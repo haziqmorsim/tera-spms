@@ -13,6 +13,7 @@ from app.api.routes.dashboard import router as dashboard_router
 from app.api.routes.health import router as health_router
 from app.api.routes.logs import router as logs_router
 from app.api.routes.notifications import router as notifications_router
+from app.api.routes.profile import router as profile_router
 from app.api.routes.reports import router as reports_router
 from app.api.routes.settings import router as settings_router
 from app.core.auth import get_current_user_from_session, is_admin_user
@@ -122,6 +123,22 @@ def settings_page(request: Request, db: Session = Depends(get_db)):
         },
     )
 
+@app.get("/profile")
+def profile_page(request: Request, db: Session = Depends(get_db)):
+    current_user = get_current_user_from_session(request, db)
+
+    if not current_user:
+        return redirect_to_signin()
+
+    return templates.TemplateResponse(
+        "profile.html",
+        {
+            "request": request,
+            "current_user": current_user,
+        },
+    )
+
+
 app.include_router(auth_router)
 app.include_router(api_router, prefix="/api")
 app.include_router(frontend_auth_router, prefix="/api")
@@ -131,5 +148,6 @@ app.include_router(alarms_router, prefix="/api")
 app.include_router(reports_router, prefix="/api")
 app.include_router(logs_router, prefix="/api")
 app.include_router(settings_router, prefix="/api")
+app.include_router(profile_router, prefix="/api")
 app.include_router(notifications_router, prefix="/api")
 app.include_router(troubleshooting.router, prefix="/api")
