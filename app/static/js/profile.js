@@ -98,7 +98,7 @@ async function loadProfile() {
             window.showLoading();
         }
 
-        const res = await fetch("/api/profle", {
+        const res = await fetch("/api/profile", {
             headers: {
                 Accept: "application/json",
             },
