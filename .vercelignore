@@ -1,0 +1,8 @@
+.venv
+venv
+.git
+.vscode
+logs
+reports
+data
+frontend/.netlify
