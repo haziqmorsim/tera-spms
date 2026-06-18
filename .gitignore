@@ -1,6 +1,9 @@
 fusionsolar_state.json
 .env
+.venv/
+venv/
 __pycache__/
+*.pyc
 *.py[cod]
 *$py.class
 /reports/
