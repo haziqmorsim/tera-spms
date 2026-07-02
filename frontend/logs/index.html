@@ -1,135 +1,290 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <title>Logs | TERA SPMS</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="/static/img/tera-icon.png" />
-    <link rel="stylesheet" href="/static/css/style.css" />
-    <link rel="stylesheet" href="/static/css/loading.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+	<meta charset="UTF-8" />
+	<title>Logs | TERA SPMS</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="icon" href="/static/img/tera-icon.png" />
+	<link rel="stylesheet" href="/static/css/style.css" />
+	<link rel="stylesheet" href="/static/css/loading.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-dark px-3" style="background-color:#1ea5ff">
-      <a class="navbar-brand" href="/"><img src="/static/img/tera-logo.jpg" height="40" alt="TERA Logo" /></a>
-      <div class="ms-auto d-flex align-items-center gap-3">
-        <span class="text-white">Welcome, <b data-current-username>User</b>!</span>
-        <div class="dropdown">
-          <button class="btn btn-outline-light btn-sm notification-button" id="notificationDropdownButton" type="button" data-bs-toggle="dropdown" data-bs-autoclose="outside" aria-expanded="false" title="Notifications">
-            <span class="notification-icon" aria-hidden="true">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M15 17H9M18 10.5C18 7.18629 15.3137 4.5 12 4.5C8.68629 4.5 6 7.18629 6 10.5V13.8L4.8 16.2C4.63375 16.5325 4.87549 16.9231 5.24721 16.9231H18.7528C19.1245 16.9231 19.3663 16.5325 19.2 16.2L18 13.8V10.5Z"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <path
-                  d="M10 19.5C10.4 20.1 11.1 20.5 12 20.5C12.9 20.5 13.6 20.1 14 19.5"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                />
-              </svg>
-            </span>
-            <span class="notification-badge d-none" id="notificationBadge">0</span>
-          </button>
-          <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow">
-            <div class="notification-dropdown-header">
-              <strong>Notifications</strong>
-              <button type="button" class="btn btn-link btn-sm p-0 notification-mark-read" id="markAllNotificationsReadBtn">
-                Mark all as read
-              </button>
-            </div>
-            <div class="notification-list" id="notificationList">
-              <div class="notification-empty">Loading notifications...</div>
-            </div>
-          </div>
-        </div>
-        <button class="btn btn-outline-light btn-sm" data-signout>Sign Out</button>
-      </div>
-    </nav>
-    <h2 class="fw-semibold" style="color:#07223b;margin:10px 15px">
-      Service Performance Monitoring System
-    </h2>
-    <div class="d-flex">
-      <div class="bg-light p-3" style="width:250px;min-height:calc(100vh - 56px)">
-        <ul class="nav flex-column sidebar-nav">
-          <li><a href="/" class="nav-link sidebar-link"><span>Dashboard</span></a></li>
-          <li><a href="/reports" class="nav-link sidebar-link"><span>Reports</span></a></li>
-          <li><a href="/logs" class="nav-link sidebar-link active"><span>Logs</span></a></li>
-          <li data-admin-only><a href="/settings" class="nav-link sidebar-link"><span>Settings</span></a></li>
-        </ul>
-      </div>
-      <main class="p-4 w-100">
-        <h3 class="mb-4">Logs</h3>
-        <div class="row g-3 mb-4">
-          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">Job Runs</h6><h2 id="jobRunCount">0</h2></div></div></div>
-          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">Email Deliveries</h6><h2 id="emailDeliveryCount">0</h2></div></div></div>
-          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">OneDrive Uploads</h6><h2 id="oneDriveUploadCount">0</h2></div></div></div>
-          <div class="col-md-3"><div class="card shadow-sm"><div class="card-body"><h6 class="text-muted">Activity Logs</h6><h2 id="activityLogCount">0</h2></div></div></div>
-        </div>
-        <section class="card shadow-sm mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Job Runs</strong>
-            <input id="jobRunsSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
-          </div>
-          <div class="card-body p-0">
-            <table class="table table-sm mb-0">
-              <thead><tr><th>Job Name</th><th>Status</th><th>Started At</th><th>Finished At</th><th>Details</th></tr></thead>
-              <tbody id="jobRunsTable"></tbody>
-            </table>
-            <div class="d-flex justify-content-end p-3"><ul id="jobRunsPagination" class="custom-pagination mb-0"></ul></div>
-          </div>
-        </section>
-        <section class="card shadow-sm mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Email Deliveries</strong>
-            <input id="emailDeliveriesSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
-          </div>
-          <div class="card-body p-0">
-            <table class="table table-sm mb-0">
-              <thead><tr><th>Time</th><th>Recipient</th><th>Subject</th><th>Status</th></tr></thead>
-              <tbody id="emailDeliveriesTable"></tbody>
-            </table>
-            <div class="d-flex justify-content-end p-3"><ul id="emailDeliveriesPagination" class="custom-pagination mb-0"></ul></div>
-          </div>
-        </section>
-        <section class="card shadow-sm mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>OneDrive Uploads</strong>
-            <input id="oneDriveUploadsSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
-          </div>
-          <div class="card-body p-0">
-            <table class="table table-sm mb-0">
-              <thead><tr><th>Time</th><th>Category</th><th>Target</th><th>Status</th></tr></thead>
-              <tbody id="oneDriveUploadsTable"></tbody>
-            </table>
-            <div class="d-flex justify-content-end p-3"><ul id="oneDriveUploadsPagination" class="custom-pagination mb-0"></ul></div>
-          </div>
-        </section>
-        <section class="card shadow-sm mb-4">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <strong>Activity Logs</strong>
-            <input id="activityLogsSearch" class="form-control form-control-sm" style="max-width:240px" placeholder="Search..." />
-          </div>
-          <div class="card-body p-0">
-            <table class="table table-sm mb-0">
-              <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Target</th><th>Status</th></tr></thead>
-              <tbody id="activityLogsTable"></tbody>
-            </table>
-            <div class="d-flex justify-content-end p-3"><ul id="activityLogsPagination" class="custom-pagination mb-0"></ul></div>
-          </div>
-        </section>
-      </main>
-    </div>
-    <footer class="app-footer text-center">Copyright © 2026 | All Rights Reserved.</footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/static/js/loading.js"></script>
-    <script src="/static/js/api-client.js"></script>
-    <script src="/static/js/frontend-auth.js"></script>
-    <script src="/static/js/logs.js"></script>
-    <script>requireAuth();</script>
+	<nav class="navbar navbar-expand-lg navbar-dark px-3" style="background-color:#1ea5ff">
+	  <a class="navbar-brand" href="/"><img src="/static/img/tera-logo.jpg" height="40" alt="TERA Logo" /></a>
+	  <div class="ms-auto d-flex align-items-center gap-3">
+		<span class="text-white">Welcome, <b data-current-username>User</b>!</span>
+		<div class="dropdown">
+		  <button class="btn btn-outline-light btn-sm notification-button" id="notificationDropdownButton" type="button" data-bs-toggle="dropdown" data-bs-autoclose="outside" aria-expanded="false" title="Notifications">
+			<span class="notification-icon" aria-hidden="true">
+			  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+				<path
+				  d="M15 17H9M18 10.5C18 7.18629 15.3137 4.5 12 4.5C8.68629 4.5 6 7.18629 6 10.5V13.8L4.8 16.2C4.63375 16.5325 4.87549 16.9231 5.24721 16.9231H18.7528C19.1245 16.9231 19.3663 16.5325 19.2 16.2L18 13.8V10.5Z"
+				  stroke="currentColor"
+				  stroke-width="2"
+				  stroke-linecap="round"
+				  stroke-linejoin="round"
+				/>
+				<path
+				  d="M10 19.5C10.4 20.1 11.1 20.5 12 20.5C12.9 20.5 13.6 20.1 14 19.5"
+				  stroke="currentColor"
+				  stroke-width="2"
+				  stroke-linecap="round"
+				/>
+			  </svg>
+			</span>
+			<span class="notification-badge d-none" id="notificationBadge">0</span>
+		  </button>
+		  <div class="dropdown-menu dropdown-menu-end notification-dropdown shadow">
+			<div class="notification-dropdown-header">
+			  <strong>Notifications</strong>
+			  <button type="button" class="btn btn-link btn-sm p-0 notification-mark-read" id="markAllNotificationsReadBtn">
+				Mark all as read
+			  </button>
+			</div>
+			<div class="notification-list" id="notificationList">
+			  <div class="notification-empty">Loading notifications...</div>
+			</div>
+		  </div>
+		</div>
+		<button class="btn btn-outline-light btn-sm" data-signout>Sign Out</button>
+	  </div>
+	</nav>
+	<h2 class="fw-semibold" style="color:#07223b;margin:10px 15px">
+	  Service Performance Monitoring System
+	</h2>
+	<div class="d-flex">
+	  <div class="bg-light p-3" style="width:250px;min-height:calc(100vh - 56px)">
+		<ul class="nav flex-column sidebar-nav">
+		  <li><a href="/" class="nav-link sidebar-link"><span>Dashboard</span></a></li>
+		  <li><a href="/reports" class="nav-link sidebar-link"><span>Reports</span></a></li>
+		  <li><a href="/logs" class="nav-link sidebar-link active"><span>Logs</span></a></li>
+		  <li data-admin-only><a href="/settings" class="nav-link sidebar-link"><span>Settings</span></a></li>
+		</ul>
+	  </div>
+	  <main class="p-4 w-100">
+		<h3 class="mb-4">Logs</h3>
+		<div class="alert alert-small mb-2" id="logsDateRange">
+		  Showing logs for the latest 3 months only. Older records remain available in the database.
+		</div>
+
+		<div class="container-fluid">
+		  <div class="row g-3 mb-4">
+			<div class="col-md-3">
+			  <div class="card shadow-sm">
+				<div class="card-body">
+				  <h6 class="text-muted mb-1">Job Runs</h6>
+				  <h2 id="jobRunCount">-</h2>
+				</div>
+			  </div>
+			</div>
+
+			<div class="col-md-3">
+			  <div class="card shadow-sm">
+				<div class="card-body">
+				  <h6 class="text-muted mb-1">Email Deliveries</h6>
+				  <h2 id="emailDeliveryCount">-</h2>
+				</div>
+			  </div>
+			</div>
+
+			<div class="col-md-3">
+			  <div class="card shadow-sm">
+				<div class="card-body">
+				  <h6 class="text-muted mb-1">OneDrive Uploads</h6>
+				  <h2 id="oneDriveUploadCount">-</h2>
+				</div>
+			  </div>
+			</div>
+
+			<div class="col-md-3">
+			  <div class="card shadow-sm">
+				<div class="card-body">
+				  <h6 class="text-muted mb-1">Activity Logs</h6>
+				  <h2 id="activityLogCount">-</h2>
+				</div>
+			  </div>
+			</div>
+		  </div>
+
+		  <div class="row g-4">
+			<div class="col-12">
+			  <div class="card shadow-sm">
+				<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+				  <strong>Recent Job Runs</strong>
+				  <div class="table-search-box">
+					<span class="search-icon" aria-hidden="true">
+					  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+						<path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					  </svg>
+					</span>
+					<input type="search" id="jobRunsSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+				  </div>
+				</div>
+				<div class="card-body p-0">
+				  <div class="table-responsive">
+					<table class="table table-sm mb-0">
+					  <colgroup>
+						<col style="width: 25%;">
+						<col style="width: 10%;">
+						<col style="width: 15%;">
+						<col style="width: 15%;">
+						<col style="width: 35%;">
+					  </colgroup>
+					  <thead>
+						<tr>
+						  <th class="text-center">Job Name</th>
+						  <th class="text-center">Status</th>
+						  <th class="text-center">Started At</th>
+						  <th class="text-center">Finished At</th>
+						  <th class="text-center">Details</th>
+						</tr>
+					  </thead>
+					  <tbody id="jobRunsTable"></tbody>
+					</table>
+				  </div>
+				  <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+					<div class="small text-muted" id="jobRunsResultsInfo">Showing 0-0 of 0 results</div>
+					<ul class="custom-pagination mb-0" id="jobRunsPagination"></ul>
+				  </div>
+				</div>
+			  </div>
+			</div>
+
+			<div class="col-12">
+			  <div class="card shadow-sm">
+				<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+				  <strong>Recent Email Deliveries</strong>
+				  <div class="table-search-box">
+					<span class="search-icon" aria-hidden="true">
+					  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+						<path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					  </svg>
+					</span>
+					<input type="search" id="emailDeliveriesSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+				  </div>
+				</div>
+				<div class="card-body p-0">
+				  <div class="table-responsive">
+					<table class="table table-sm mb-0">
+					  <colgroup>
+						<col style="width: 20%;">
+						<col style="width: 25%;">
+						<col style="width: 40%;">
+						<col style="width: 15%;">
+					  </colgroup>
+					  <thead>
+						<tr>
+						  <th class="text-center">Time</th>
+						  <th class="text-center">Recipient</th>
+						  <th class="text-center">Subject</th>
+						  <th class="text-center">Status</th>
+						</tr>
+					  </thead>
+					  <tbody id="emailDeliveriesTable"></tbody>
+					</table>
+				  </div>
+				  <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+					<div class="small text-muted" id="emailDeliveriesResultsInfo">Showing 0-0 of 0 results</div>
+					<ul class="custom-pagination mb-0" id="emailDeliveriesPagination"></ul>
+				  </div>
+				</div>
+			  </div>
+			</div>
+
+			<div class="col-12">
+			  <div class="card shadow-sm">
+				<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+				  <strong>Recent OneDrive Uploads</strong>
+				  <div class="table-search-box">
+					<span class="search-icon" aria-hidden="true">
+					  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+						<path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					  </svg>
+					</span>
+					<input type="search" id="oneDriveUploadsSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+				  </div>
+				</div>
+				<div class="card-body p-0">
+				  <div class="table-responsive">
+					<table class="table table-sm mb-0">
+					  <colgroup>
+						<col style="width: 20%;">
+						<col style="width: 25%;">
+						<col style="width: 40%;">
+						<col style="width: 15%;">
+					  </colgroup>
+					  <thead>
+						<tr>
+						  <th class="text-center">Time</th>
+						  <th class="text-center">Category</th>
+						  <th class="text-center">File</th>
+						  <th class="text-center">Status</th>
+						</tr>
+					  </thead>
+					  <tbody id="oneDriveUploadsTable"></tbody>
+					</table>
+				  </div>
+				  <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+					<div class="small text-muted" id="oneDriveUploadsResultsInfo">Showing 0-0 of 0 results</div>
+					<ul class="custom-pagination mb-0" id="oneDriveUploadsPagination"></ul>
+				  </div>
+				</div>
+			  </div>
+			</div>
+
+			<div class="col-12">
+			  <div class="card shadow-sm">
+				<div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+				  <strong>Activity Logs</strong>
+				  <div class="table-search-box">
+					<span class="search-icon" aria-hidden="true">
+					  <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+						<path d="M21 21L16.65 16.65M18.5 11.25C18.5 15.2541 15.2541 18.5 11.25 18.5C7.24594 18.5 4 15.2541 4 11.25C4 7.24594 7.24594 4 11.25 4C15.2541 4 18.5 7.24594 18.5 11.25Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+					  </svg>
+					</span>
+					<input type="search" id="activityLogsSearch" class="form-control form-control-sm" placeholder="Search..." autocomplete="off" />
+				  </div>
+				</div>
+				<div class="card-body p-0">
+				  <div class="table-responsive">
+					<table class="table table-sm mb-0">
+					  <colgroup>
+						<col style="width: 15%;">
+						<col style="width: 25%;">
+						<col style="width: 15%;">
+						<col style="width: 35%;">
+						<col style="width: 10%;">
+					  </colgroup>
+					  <thead>
+						<tr>
+						  <th class="text-center">Time</th>
+						  <th class="text-center">User</th>
+						  <th class="text-center">Action</th>
+						  <th class="text-center">Target</th>
+						  <th class="text-center">Status</th>
+						</tr>
+					  </thead>
+					  <tbody id="activityLogsTable"></tbody>
+					</table>
+				  </div>
+				  <div class="p-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+					<div class="small text-muted" id="activityLogsResultsInfo">Showing 0-0 of 0 results</div>
+					<ul class="custom-pagination mb-0" id="activityLogsPagination"></ul>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		  </div>
+		</div>
+	  </main>
+	</div>
+	<footer class="app-footer text-center">Copyright © 2026 | All Rights Reserved.</footer>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="/static/js/loading.js"></script>
+	<script src="/static/js/api-client.js"></script>
+	<script src="/static/js/frontend-auth.js"></script>
+	<script src="/static/js/logs.js"></script>
+	<script>requireAuth();</script>
   </body>
 </html>
